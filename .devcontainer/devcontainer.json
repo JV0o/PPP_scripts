@@ -1,0 +1,33 @@
+{
+    "name": "Python Conda DevContainer for Project",
+    "build": {
+      "dockerfile": "Dockerfile"  // Specify the path to the Dockerfile
+    },
+    "customizations": {
+      "vscode": {
+        "settings": {
+          "python.pythonPath": "/opt/conda/envs/da39/bin/python"  // Path to the Python executable in the Conda environment
+        },
+        "extensions": [
+          "ms-python.python",          // Python support for VS Code
+          "ms-python.pylance",         // Pylance for type checking and auto-completion
+          "ms-python.python-debugger", // Python Debugger
+          "ms-vscode-remote.remote-wsl", // WSL support
+          "github.vscode-pull-request-github" // Optional GitHub integration for VS Code
+        ]
+      }
+    },
+    "postCreateCommand": [
+      "conda env create -f /workspace/environment.yml",  // Create the Conda environment from the environment.yml
+      "conda activate da39"  // Activate the environment after it's created
+    ],
+    "mounts": [
+      "source=${localWorkspaceFolder}/data,target=/workspace/data,type=bind"  // Optional: Mount local directory to container
+    ],
+    "forwardPorts": [],  // If your project needs to expose any ports (e.g., for Flask or Jupyter)
+    "workspaceFolder": "/workspace",  // Default workspace folder
+    "remoteUser": "vscode",  // Use the 'vscode' user for the container, standard for DevContainers
+    "runArgs": [
+      "--gpus", "all"  // Optionally add GPU support if needed
+    ]
+  }
