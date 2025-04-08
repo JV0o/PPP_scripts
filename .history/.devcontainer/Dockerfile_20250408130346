@@ -30,4 +30,4 @@ WORKDIR /workspace
 EXPOSE 8888
 
 # Default command to activate the Conda environment and keep the container running
-CMD ["bash", "-c", "source /opt/conda/bin/activate da39 && tail -f /dev/null"]
+CMD ["bash", "-c", "conda activate da39 && tail -f /dev/null"]
