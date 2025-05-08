@@ -1,0 +1,23 @@
+FROM continuumio/miniconda3
+
+# Set the working directory to /app
+WORKDIR /AMBR_sampling_scheme
+
+# Copy the current directory contents into the container at /app
+COPY . /AMBR_sampling_scheme
+
+# Create the conda environment from environment.yml
+RUN conda env create -f environment.yml
+#RUN conda env export --no-builds | grep -v "prefix:" > environment.yml
+
+# Ensure the conda environment is used
+ENV PATH=/opt/conda/envs/myenv/bin:$PATH
+
+# Make port 80 available to the world outside this container
+EXPOSE 80
+
+# Define environment variable
+ENV NAME=World
+
+# Run app.py when the container launches
+CMD ["python", "AMBR_sampling_scheme.py"]
