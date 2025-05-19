@@ -273,6 +273,9 @@ def main():
         for row in range(2, len(benchling_df) + 2):  # Adjusting for Excel 1-based index (DataFrame is 0-based)
             formula = f'=IF(F{row}=$U$4,$T$4,IF(F{row}=$U$5,$T$5))'  # Adjust for absolute references
             worksheet.write_formula(f'C{row}', formula)  # Writing formula to 'OD1' column (H)
+        for row in range(2, len(benchling_df) + 2):  # Adjusting for Excel 1-based index (DataFrame is 0-based)
+            formula = f'=$T$2&"_"&H{row}&"__"&I{row}&"_"&"SOA"&"_"&"#1"'  # Adjust for absolute references
+            worksheet.write_formula(f'D{row}', formula)  # Writing formula to 'OD1' column (H)
 
         print(f'Combined and sorted data saved as {output_file_path}')
         

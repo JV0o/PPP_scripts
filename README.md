@@ -1,0 +1,2 @@
+In this repository are two scripts that will help to organize the sampling and the data accumulation to upload them on benchling and later on pas-x.
+The AMBR_sampling_scheme helps to sort the samples in an organized way. 
