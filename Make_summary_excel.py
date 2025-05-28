@@ -74,7 +74,7 @@ def save_file_path(defaultextension, filetypes, title):
 # Function to process the Excel file
 def process_excel(file_path):
     # Read the "List Format" sheet from the Excel file
-    df = pd.read_excel(file_path, sheet_name="List Format")
+    df = pd.read_excel(file_path, sheet_name="List Format",engine='openpyxl')
     
     # List of well positions in the desired order depending on if it is 24 or 96 well plate
     if plate_used==24:
