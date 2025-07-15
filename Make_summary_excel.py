@@ -148,15 +148,15 @@ def process_excel(file_path):
 def process_text_file(file_path):
     #### GEt the stage runs from benchling file
     # Get the text or CSV file path from the user
-    text_file_path_benchling = get_file_path(filetypes=[("Text and CSV files", "*.txt *.csv")], title="Select a text or CSV file with benchling stage runs")
-    if not text_file_path_benchling:
-        print('No text or CSV file selected.')
-        return
-    df = pd.read_csv(text_file_path_benchling)
-    df2 = df[['Reactor/Plate Number', 'Stage Run']]  # Extracting info regarding StageID and Reactor number
+    ## HERE ##text_file_path_benchling = get_file_path(filetypes=[("Text and CSV files", "*.txt *.csv")], title="Select a text or CSV file with benchling stage runs")
+    ## HERE ##if not text_file_path_benchling:
+    ## HERE ##    print('No text or CSV file selected.')
+    ## HERE ##    return
+    ## HERE ##df = pd.read_csv(text_file_path_benchling)
+    ## HERE ##df2 = df[['Reactor/Plate Number', 'Stage Run']]  # Extracting info regarding StageID and Reactor number
     # Apply the function to the 'reactors' column
     #df2['Reactor/Plate Number'] = df['Reactor/Plate Number'].apply(remove_leading_zeros) 
-    dmb = dict(df2.values)
+    ## HERE ##dmb = dict(df2.values)
     
     # Name to number dict:
     n2n = {chr(65 + i): i + 1 for i in range(8)}  # A-H to 1-8
@@ -193,7 +193,7 @@ def process_text_file(file_path):
 
     csv_df = pd.DataFrame(data)
     csv_df=csv_df[csv_df.Volume != '2.00'] ####### Here you can delete rows with a specific volume. 
-    csv_df['Stage run'] = csv_df['Reactor'].map(dmb)  # Coupling StageID to reactor number
+    ## HERE ##csv_df['Stage run'] = csv_df['Reactor'].map(dmb)  # Coupling StageID to reactor number
     return csv_df
 
 # Main function
