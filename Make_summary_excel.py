@@ -265,6 +265,7 @@ def main():
         worksheet.write('U4','11')
         worksheet.write('U2','CAREFUL TO WRITE THE PLATE NR AS TEXT')
         worksheet.write('R1','CDW')
+        worksheet.write('Q1','Not used')
         worksheet.write('S1','Not used')
         worksheet.write('T1','Not used')
         worksheet.write('U1','Not used')
