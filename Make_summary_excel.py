@@ -148,15 +148,17 @@ def process_excel(file_path):
 def process_text_file(file_path):
     #### GEt the stage runs from benchling file
     # Get the text or CSV file path from the user
-    text_file_path_benchling = get_file_path(filetypes=[("Text and CSV files", "*.txt *.csv")], title="Select a text or CSV file with benchling stage runs")
+    text_file_path_benchling = get_file_path(filetypes=[("Text and CSV files", "*.txt *.csv")], title="Select a text or CSV file from Fermentation Culture (Main)")
     if not text_file_path_benchling:
         print('No text or CSV file selected.')
         return
     df = pd.read_csv(text_file_path_benchling)
-    df2 = df[['Reactor/Plate Number', 'Stage Run']]  # Extracting info regarding StageID and Reactor number
+    df2 = df[['Reactor/Plate/Flask Number', 'Entity']]  # Extracting info regarding StageID and Reactor number
+    df3 = df[['Reactor/Plate/Flask Number','Base Medium']]
     # Apply the function to the 'reactors' column
     #df2['Reactor/Plate Number'] = df['Reactor/Plate Number'].apply(remove_leading_zeros) 
     dmb = dict(df2.values)
+    dmb2 = dict(df3.values)
     
     # Name to number dict:
     n2n = {chr(65 + i): i + 1 for i in range(8)}  # A-H to 1-8
@@ -193,13 +195,14 @@ def process_text_file(file_path):
 
     csv_df = pd.DataFrame(data)
     csv_df=csv_df[csv_df.Volume != '2.00'] ####### Here you can delete rows with a specific volume. 
-    csv_df['Stage run'] = csv_df['Reactor'].map(dmb)  # Coupling StageID to reactor number
+    csv_df['Parent culture'] = csv_df['Reactor'].map(dmb)  # Coupling Entity to reactor number
+    csv_df['Medium'] = csv_df['Reactor'].map(dmb2)  # Coupling Medium to reactor number
     return csv_df
 
 # Main function
 def main():
     # Get the Excel file path from the user
-    excel_file_path = get_file_path(filetypes=[("Excel files", "*.xlsx *.xls")], title="Select an Excel file with sample placements")
+    excel_file_path = get_file_path(filetypes=[("Excel files", "*.xlsx *.xls")], title="Select an Excel file with sample scheme")
     if not excel_file_path:
         print('No Excel file selected.')
         return
@@ -258,24 +261,30 @@ def main():
         worksheet = writer.sheets['benchling']
         
         # Write text into a specific cell (e.g., A1)
-        worksheet.write('T2', 'XXX_PD_001')
-        worksheet.write('T3', 'Plate name benchling')
-        worksheet.write('T4', 'XXX_PD_001_AMBR_SOA_plate#1')
-        worksheet.write('U3','Plate Nr (from AMBR)')
-        worksheet.write('U4','11')
-        worksheet.write('U2','CAREFUL TO WRITE THE PLATE NR AS TEXT')
-        worksheet.write('R1','CDW')
-        worksheet.write('S1','Not used')
-        worksheet.write('T1','Not used')
+        worksheet.write('U2', 'XXX_PD_001')
+        worksheet.write('U3', 'Plate name benchling')
+        worksheet.write('U4', 'XXX_PD_001_AMBR_SOA_plate#1')
+        worksheet.write('V3','Plate Nr (from AMBR)')
+        worksheet.write('V4','11')
+        worksheet.write('V2','CAREFUL TO WRITE THE PLATE NR AS TEXT')
+        #worksheet.write('R1','CDW')
+        worksheet.write('S1','CDW')
+        worksheet.write('T1','replicate #')
         worksheet.write('U1','Not used')
+        worksheet.write('V1','Not used')
         # Write the formula in the appropriate column (for example, 'OD1' starts from column H)
         # Assuming 'E2' refers to the 2nd row of column E, and 'T4' and 'S4' refer to absolute cells
+        for row in range(2, len(benchling_df) + 2):  # Same row range as before
+            worksheet.write(f'T{row}', 1)  # Write the value 1 into column B
         for row in range(2, len(benchling_df) + 2):  # Adjusting for Excel 1-based index (DataFrame is 0-based)
-            formula = f'=IF(F{row}=$U$4,$T$4,IF(F{row}=$U$5,$T$5))'  # Adjust for absolute references
-            worksheet.write_formula(f'C{row}', formula)  # Writing formula to 'OD1' column (H)
+            formula = f'=$U$2&"_"&H{row}&"__"&I{row}'  # Adjust for absolute references
+            worksheet.write_formula(f'B{row}', formula)  # Writing formula for benchling sample name
         for row in range(2, len(benchling_df) + 2):  # Adjusting for Excel 1-based index (DataFrame is 0-based)
-            formula = f'=$T$2&"_"&H{row}&"__"&I{row}&"_"&"SOA"&"_"&"#1"'  # Adjust for absolute references
-            worksheet.write_formula(f'D{row}', formula)  # Writing formula to 'OD1' column (H)
+            formula = f'=IF(F{row}=$V$4,$U$4,IF(F{row}=$V$5,$U$5))'  # Adjust for absolute references
+            worksheet.write_formula(f'C{row}', formula)  # Writing formula for plate name
+        for row in range(2, len(benchling_df) + 2):  # Adjusting for Excel 1-based index (DataFrame is 0-based)
+            formula = f'=$U$2&"_"&H{row}&"__"&I{row}&"_"&"SOA"&"_"&"#"&T{row}'  # Adjust for absolute references
+            worksheet.write_formula(f'D{row}', formula)  # Writing formula for benchling sample name SOA
 
         print(f'Combined and sorted data saved as {output_file_path}')
         
