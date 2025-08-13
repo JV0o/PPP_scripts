@@ -138,7 +138,7 @@ def process_excel(file_path):
     combined_df = pd.DataFrame({
         'Sample': combined_samples,
         'Plate': plate_info,
-        'Well': well_info,
+        'Destination Well': well_info,
         'Reactor':reactor_number_info,
         'Timepoint (#)':sample_number_info,
     })
@@ -186,7 +186,7 @@ def process_text_file(file_path):
                 'Time_Value': time_value,
                 'Volume': matches.group(3),
                 'Plate': matches.group(4),
-                'Well': matches.group(5),
+                'Destination Well': matches.group(5),
                 'Well_Number': n2n[matches.group(5)[0]]
             })
     
@@ -218,7 +218,7 @@ def main():
     timepoints_df = process_text_file(text_file_path)
 
     # Merge the data on Plate and Well
-    merged_df = pd.merge(combined_df, timepoints_df, on=['Plate', 'Well','Reactor'], how='left')
+    merged_df = pd.merge(combined_df, timepoints_df, on=['Plate', 'Destination Well','Reactor'], how='left')
 
     # Sort the merged DataFrame by 'Reactor' and 'Time_Value' columns
     merged_df = merged_df.sort_values(by=['Reactor', 'Time_Value'])
@@ -233,7 +233,7 @@ def main():
     benchling_df = merged_df[merged_df['Time_Value'].notna() & (merged_df['Time_Value'] != '')]
     ## Adding three columns before the one existing and three after for (#) (benchling sample name) (Plate name benchling) (Dilution) (OD1) (OD2)
     # Define the new column titles
-    columns_before = ['Benchling sample', 'Plate Benchling', 'Benchling sample SOA']
+    columns_before = ['Benchling sample', 'Destination Plate', 'Benchling sample SOA']
     columns_after = ['Dilution', 'Raw Absorbance Value #1', 'Raw Absorbance Value #2']
     
     # Create empty DataFrames for the new columns
@@ -260,8 +260,11 @@ def main():
         workbook  = writer.book
         worksheet = writer.sheets['benchling']
         
+        # Create a text format
+        text_format = workbook.add_format({'num_format': '@'})
+
         # Write text into a specific cell (e.g., A1)
-        worksheet.write('U2', 'XXX_PD_001')
+        worksheet.write('U2', 'XXX_PD_001_AMBR')
         worksheet.write('U3', 'Plate name benchling')
         worksheet.write('U4', 'XXX_PD_001_AMBR_SOA_plate#1')
         worksheet.write('V3','Plate Nr (from AMBR)')
@@ -272,6 +275,11 @@ def main():
         worksheet.write('T1','replicate #')
         worksheet.write('U1','Not used')
         worksheet.write('V1','Not used')
+        # Set column A and B (0-based index, so A=0, B=1) to text format
+        worksheet.set_column('P:P', None, text_format)  # Column P
+        worksheet.set_column('Q:Q', None, text_format)  # Column Q
+        worksheet.set_column('R:R', None, text_format)  # Column R
+        worksheet.set_column('S:S', None, text_format)  # Column S
         # Write the formula in the appropriate column (for example, 'OD1' starts from column H)
         # Assuming 'E2' refers to the 2nd row of column E, and 'T4' and 'S4' refer to absolute cells
         for row in range(2, len(benchling_df) + 2):  # Same row range as before
